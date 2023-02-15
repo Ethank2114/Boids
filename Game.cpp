@@ -40,8 +40,8 @@ void Game::update() {
     // poll for events
     this->pollEvents();
 
-    for (Entity* e: entities) {
-        e->update(this);
+    for (Entity& e: entities) {
+        e.update(this);
     }
 }
 
@@ -49,8 +49,8 @@ void Game::render() {
     this->window->clear(sf::Color(40, 40, 35, 255)); // clear window
 
     // draw game objects
-    for (Entity* e: entities) {
-        e->draw(this);
+    for (Entity& e: entities) {
+        e.draw(this);
     }
 
     this->window->display(); // display window
@@ -73,7 +73,9 @@ void Game::initScene() {
         float randSpeed = 1;//3.0;
         float randDir = (float)(rand() % 360);
 
-        entities.push_back(new Glider(randX, randY, randSpeed, randDir));
+        sf::Vector2f vel = randSpeed * sf::Vector2f(cos(randDir * (3.1415/180)), sin(randDir * (3.1415 / 180)));
+
+        entities.push_back(*(new Glider(randX, randY, vel)));
     }
 }
 
@@ -90,6 +92,6 @@ sf::RenderWindow* Game::getWindow() {
     return this->window;
 }
 
-std::vector<Entity*>& Game::getEntities() {
+std::vector<Entity&>& Game::getEntities() {
     return this->entities;
 }

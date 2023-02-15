@@ -11,10 +11,11 @@ class Entity;
 class Glider: public Entity {
 public:
 
-	Glider(float x, float y, float speed, float direction);
+	Glider(float x, float y, sf::Vector2f& velocity);
 
 	void draw(Game* game);
 	void update(Game* game);
+
 private:
 
 	sf::Color color;

@@ -14,15 +14,19 @@ Entity::Entity() {
 Entity::Entity(float x, float y) {
 	this->x = x;
 	this->y = y;
-	this->speed = 0;
-	this->direction = 0;
+
+	this->velocity = sf::Vector2f(0, 0);
+
+	//this->speed = 0;
+	//this->direction = 0;
 }
 
-Entity::Entity(float x, float y, float speed, float direction) {
+Entity::Entity(float x, float y, sf::Vector2f& velocity) {
 	this->x = x;
 	this->y = y;
-	this->speed = speed;
-	this->direction = direction;
+	this->velocity = velocity;
+	//this->speed = speed;
+	//this->direction = direction;
 }
 
 Entity::~Entity() {
@@ -32,12 +36,12 @@ Entity::~Entity() {
 void Entity::initVariables() {
 	this->x = 0;
 	this->y = 0;
-	this->speed = 0;
-	this->direction = 0;
+
+	this->velocity = sf::Vector2f(0, 0);
 }
 
 float Entity::getDirection() {
-	return this->direction;
+	return tan(this->velocity.y / this->velocity.x);
 }
 
 float Entity::getX() {
@@ -48,10 +52,24 @@ float Entity::getY() {
 	return y;
 }
 
-float Entity::distance(Entity& entity) {
-	return sqrt(pow(entity.x - this->x, 2) + pow(entity.y - this->y, 2));
+float Entity::getVX() {
+	return this->velocity.x;
 }
 
+float Entity::getVY() {
+	return this->velocity.y;
+}
+
+sf::Vector2f& Entity::getVelocity() {
+	return this->velocity;
+}
+
+float Entity::distance(Entity& entity) {
+	float dx = entity.x - this->x;
+	float dy = entity.y - this->y;
+	return sqrt(dx * dx + dy * dy);
+}
+/*
 sf::Vector2f Entity::toward(Entity& entity) {
 	float mag = this->distance(entity);
 	return sf::Vector2f((this->x - entity.x), (this->y - entity.y)) / mag;
@@ -68,7 +86,7 @@ float Entity::angle(Entity& entity) {
 
 	return std::acos(out) * (180 / PI);
 }
-
+*/
 void Entity::draw(Game* game) {
 
 	sf::RectangleShape rect(sf::Vector2f(16, 16));
@@ -79,8 +97,11 @@ void Entity::draw(Game* game) {
 }
 
 void Entity::update(Game* game) {
-	this->x += this->speed * (float)cos(this->direction * (PI/180));
-	this->y -= this->speed * (float)sin(this->direction * (PI/180));
+	//this->x += this->speed * (float)cos(this->direction * (PI/180));
+	//this->y += this->speed * (float)sin(this->direction * (PI/180));
+
+	this->x += this->velocity.x;
+	this->y += this->velocity.y;
 
 	if (this -> x < 0) {
 		this->x = (float)game->getWindow()->getSize().x;
