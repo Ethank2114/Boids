@@ -43,53 +43,20 @@ void Glider::draw(Game* game) {
 
 	game->getWindow()->draw(trig);
 
-	/*
-	Entity* closest = nullptr;
-	float closestDist = FLT_MAX;
-
-	for (Entity* e : game->getEntities()) {
-		float dist = e->distance(*this);
-		
-		if (dist < closestDist && dist != 0) {
-			if (e->angle(*this) < 90) {
-				//std::cout << e->angle(*this) << std::endl;
-				closest = e;
-				closestDist = e->distance(*this);
-			}
-			
-		}
-	}
-	
-
-	//std::cout << this->angle(*closest) << std::endl;
-
-	// nullptr guard
-	if (closest == nullptr) {
-		return;
-	}
-
-	sf::VertexArray line(sf::LineStrip, 2);
-	line[0].position = sf::Vector2f(this->x, this->y);
-	line[1].position = sf::Vector2f(closest->getX(), closest->getY());
-
-
-	line[0].color = this->color;
-	line[1].color = this->color;
-
-	game->getWindow()->draw(line);
-	*/
 }
 
 void Glider::update(Game* game) {
 
-	float visRange = 100;
-	float protRange = 30;
+	float visRange = 150;
+	float protRange = 25;
 
 	int margin = 50; // invis border
-	float turnfactor = 0.2;
-	float minSpeed = 2;
-	float maxSpeed = 3;
-	float avoidFactor = 0.05;
+	float turnfactor = 0.2f;
+	float minSpeed = 3;
+	float maxSpeed = 4;
+	float avoidFactor = 0.008f;
+	float centerFactor = 0.00025f;
+	float matchFactor = 0.025f;
 
 	float dx = 0;
 	float dy = 0;
@@ -103,10 +70,10 @@ void Glider::update(Game* game) {
 	float vxAvg = 0;
 	float vyAvg = 0;
 	int neighbors = 0;
-	/*
-	for (Entity& e : game->getEntities()) {
-		dx = this->x - e.getX();
-		dy = this->y - e.getY();
+	
+	for (Entity* e : game->getEntities()) {
+		dx = this->x - e->getX();
+		dy = this->y - e->getY();
 
 		// if within visual range
 		if (abs(dx) < visRange && abs(dy) < visRange) {
@@ -118,21 +85,32 @@ void Glider::update(Game* game) {
 				closeDy += dy;
 			}
 			else if (distSquared < visRangeSquared) {
-				xAvg += e.getX();
-				yAvg += e.getY();
-				vxAvg += e.getVX();
-				vyAvg += e.getVY();
+				xAvg += e->getX();
+				yAvg += e->getY();
+				vxAvg += e->getVX();
+				vyAvg += e->getVY();
 
 				neighbors++;
 			}
-
 		}
+	}
+
+	if (neighbors > 0) {
+		xAvg /= neighbors;
+		yAvg /= neighbors;
+		vxAvg /= neighbors;
+		vyAvg /= neighbors;
+
+		this->velocity.x += (xAvg - this->x) * centerFactor + (vxAvg - this->velocity.x) * matchFactor;
+		this->velocity.y += (yAvg - this->y) * centerFactor + (vyAvg - this->velocity.y) * matchFactor;
 
 	}
 	
+	// Avoidance of others
 	this->velocity.x += closeDx * avoidFactor;
 	this->velocity.y += closeDy * avoidFactor;
-	*/
+	
+	// edge avoidance
 	if (this->x < margin) {
 		this->velocity.x += turnfactor;
 	}
@@ -146,6 +124,8 @@ void Glider::update(Game* game) {
 		this->velocity.y -= turnfactor;
 	}
 
+
+	// Enforce min and max speed
 	float vx = this->velocity.x;
 	float vy = this->velocity.y;
 
@@ -160,38 +140,8 @@ void Glider::update(Game* game) {
 		this->velocity.y *= maxSpeed / speed;
 	}
 
-	/*
 
-	// edge of screen
-	if (this->x < 0) {
-		this->x = (float)game->getWindow()->getSize().x;
-	}
-	else if (this->x >= (float)game->getWindow()->getSize().x) {
-		this->x = 0;
-	}
-	else if (this->y < 0) {
-		this->y = (float)game->getWindow()->getSize().y;
-	}
-	else if (this->y >= (float)game->getWindow()->getSize().y) {
-		this->y = 0;
-	}
-
-	*/
-
+	// Update position
 	this->x += this->velocity.x;
 	this->y += this->velocity.y;
-
-	/*
-	for (Entity* e : game->getEntities()) {
-		float dist = e->distance(*this);
-
-		if (dist < 100 && dist != 0) {
-			if (e->angle(*this) < 90) {
-				
-				this->direction += (-1 * e->angle(*this) + 90) / 90;
-			}
-
-		}
-	}
-	*/
 }

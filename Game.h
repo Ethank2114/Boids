@@ -4,8 +4,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
+//#include <SFML/System.hpp>
+//#include <SFML/Window.hpp>
 
 class Entity;
 
@@ -19,7 +19,7 @@ public:
 
 	const bool running();
 	sf::RenderWindow* getWindow();
-	std::vector<Entity&>& getEntities();
+	std::vector<Entity*>& getEntities();
 
 private:
 
@@ -27,7 +27,7 @@ private:
 	sf::VideoMode videoMode;
 	sf::Event event;
 
-	std::vector<Entity&> entities = std::vector<Entity&>();
+	std::vector<Entity*> entities = std::vector<Entity*>();
 
 	void initVariables();
 	void initScene();
